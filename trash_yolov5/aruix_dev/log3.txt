@@ -1,0 +1,88 @@
+
+
+(yolov5) aruix@alinux:~/library/yolov5-master$ fm .
+(yolov5) aruix@alinux:~/library/yolov5-master$ py train.py --data coco.yaml --batch-size 8
+train: weights=yolov5s.pt, cfg=, data=coco.yaml, hyp=data/hyps/hyp.scratch.yaml, epochs=300, batch_size=8, img_size=[640, 640], rect=False, resume=False, nosave=False, notest=False, noautoanchor=False, evolve=False, bucket=, cache_images=False, image_weights=False, device=, multi_scale=False, single_cls=False, adam=False, sync_bn=False, workers=8, project=runs/train, entity=None, name=exp, exist_ok=False, quad=False, linear_lr=False, label_smoothing=0.0, upload_dataset=False, bbox_interval=-1, save_period=-1, artifact_alias=latest, local_rank=-1
+github: skipping check (not a git repository), for updates see https://github.com/ultralytics/yolov5
+requirements: tensorboard>=2.4.1 not found and is required by YOLOv5, attempting auto-update...
+Requirement already satisfied: tensorboard>=2.4.1 in /home/aruix/.local/lib/python3.8/site-packages (2.5.0)
+Requirement already satisfied: wheel>=0.26; python_version >= "3" in /home/aruix/app/anaconda3/envs/yolov5/lib/python3.8/site-packages (from tensorboard>=2.4.1) (0.35.1)
+Requirement already satisfied: markdown>=2.6.8 in /home/aruix/.local/lib/python3.8/site-packages (from tensorboard>=2.4.1) (3.3.4)
+Requirement already satisfied: numpy>=1.12.0 in /home/aruix/.local/lib/python3.8/site-packages (from tensorboard>=2.4.1) (1.20.2)
+Requirement already satisfied: setuptools>=41.0.0 in /home/aruix/app/anaconda3/envs/yolov5/lib/python3.8/site-packages (from tensorboard>=2.4.1) (50.3.1.post20201107)
+Requirement already satisfied: absl-py>=0.4 in /home/aruix/.local/lib/python3.8/site-packages (from tensorboard>=2.4.1) (0.13.0)
+Requirement already satisfied: requests<3,>=2.21.0 in /home/aruix/app/anaconda3/envs/yolov5/lib/python3.8/site-packages (from tensorboard>=2.4.1) (2.24.0)
+Requirement already satisfied: grpcio>=1.24.3 in /home/aruix/.local/lib/python3.8/site-packages (from tensorboard>=2.4.1) (1.38.1)
+Requirement already satisfied: tensorboard-data-server<0.7.0,>=0.6.0 in /home/aruix/.local/lib/python3.8/site-packages (from tensorboard>=2.4.1) (0.6.1)
+Requirement already satisfied: werkzeug>=0.11.15 in /home/aruix/.local/lib/python3.8/site-packages (from tensorboard>=2.4.1) (2.0.1)
+Requirement already satisfied: google-auth-oauthlib<0.5,>=0.4.1 in /home/aruix/.local/lib/python3.8/site-packages (from tensorboard>=2.4.1) (0.4.4)
+Requirement already satisfied: google-auth<2,>=1.6.3 in /home/aruix/.local/lib/python3.8/site-packages (from tensorboard>=2.4.1) (1.32.0)
+Requirement already satisfied: tensorboard-plugin-wit>=1.6.0 in /home/aruix/.local/lib/python3.8/site-packages (from tensorboard>=2.4.1) (1.8.0)
+Requirement already satisfied: protobuf>=3.6.0 in /home/aruix/.local/lib/python3.8/site-packages (from tensorboard>=2.4.1) (3.17.3)
+Requirement already satisfied: six in /home/aruix/app/anaconda3/envs/yolov5/lib/python3.8/site-packages (from absl-py>=0.4->tensorboard>=2.4.1) (1.15.0)
+Requirement already satisfied: chardet<4,>=3.0.2 in /home/aruix/app/anaconda3/envs/yolov5/lib/python3.8/site-packages (from requests<3,>=2.21.0->tensorboard>=2.4.1) (3.0.4)
+Requirement already satisfied: idna<3,>=2.5 in /home/aruix/app/anaconda3/envs/yolov5/lib/python3.8/site-packages (from requests<3,>=2.21.0->tensorboard>=2.4.1) (2.10)
+Requirement already satisfied: certifi>=2017.4.17 in /home/aruix/app/anaconda3/envs/yolov5/lib/python3.8/site-packages (from requests<3,>=2.21.0->tensorboard>=2.4.1) (2020.6.20)
+Requirement already satisfied: urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.1 in /home/aruix/app/anaconda3/envs/yolov5/lib/python3.8/site-packages (from requests<3,>=2.21.0->tensorboard>=2.4.1) (1.25.11)
+Requirement already satisfied: requests-oauthlib>=0.7.0 in /home/aruix/.local/lib/python3.8/site-packages (from google-auth-oauthlib<0.5,>=0.4.1->tensorboard>=2.4.1) (1.3.0)
+Collecting pyasn1-modules>=0.2.1
+  Using cached pyasn1_modules-0.2.8-py2.py3-none-any.whl (155 kB)
+Requirement already satisfied: cachetools<5.0,>=2.0.0 in /home/aruix/.local/lib/python3.8/site-packages (from google-auth<2,>=1.6.3->tensorboard>=2.4.1) (4.2.2)
+Requirement already satisfied: rsa<5,>=3.1.4; python_version >= "3.6" in /home/aruix/.local/lib/python3.8/site-packages (from google-auth<2,>=1.6.3->tensorboard>=2.4.1) (4.7.2)
+Collecting oauthlib>=3.0.0
+  Using cached oauthlib-3.1.1-py2.py3-none-any.whl (146 kB)
+Collecting pyasn1<0.5.0,>=0.4.6
+  Using cached pyasn1-0.4.8-py2.py3-none-any.whl (77 kB)
+Installing collected packages: pyasn1, pyasn1-modules, oauthlib
+Successfully installed oauthlib-3.1.1 pyasn1-0.4.8 pyasn1-modules-0.2.8
+
+requirements: 1 package updated per /home/aruix/library/yolov5-master/requirements.txt
+requirements: ⚠️ Restart runtime or rerun command for updates to take effect
+
+YOLOv5 🚀 2021-6-26 torch 1.9.0+cu102 CUDA:0 (GeForce GTX 1650, 3908.75MB)
+
+hyperparameters: lr0=0.01, lrf=0.2, momentum=0.937, weight_decay=0.0005, warmup_epochs=3.0, warmup_momentum=0.8, warmup_bias_lr=0.1, box=0.05, cls=0.5, cls_pw=1.0, obj=1.0, obj_pw=1.0, iou_t=0.2, anchor_t=4.0, fl_gamma=0.0, hsv_h=0.015, hsv_s=0.7, hsv_v=0.4, degrees=0.0, translate=0.1, scale=0.5, shear=0.0, perspective=0.0, flipud=0.0, fliplr=0.5, mosaic=1.0, mixup=0.0
+tensorboard: Start with 'tensorboard --logdir runs/train', view at http://localhost:6006/
+wandb: Currently logged in as: aruix (use `wandb login --relogin` to force relogin)
+wandb: Tracking run with wandb version 0.10.32
+wandb: Syncing run exp6
+wandb:  View project at https://wandb.ai/aruix/YOLOv5
+wandb:  View run at https://wandb.ai/aruix/YOLOv5/runs/6kjcx919
+wandb: Run data is saved locally in /home/aruix/library/yolov5-master/wandb/run-20210628_165902-6kjcx919
+wandb: Run `wandb offline` to turn off syncing.
+
+
+                 from  n    params  module                                  arguments                     
+  0                -1  1      3520  models.common.Focus                     [3, 32, 3]                    
+  1                -1  1     18560  models.common.Conv                      [32, 64, 3, 2]                
+  2                -1  1     18816  models.common.C3                        [64, 64, 1]                   
+  3                -1  1     73984  models.common.Conv                      [64, 128, 3, 2]               
+  4                -1  1    156928  models.common.C3                        [128, 128, 3]                 
+  5                -1  1    295424  models.common.Conv                      [128, 256, 3, 2]              
+  6                -1  1    625152  models.common.C3                        [256, 256, 3]                 
+  7                -1  1   1180672  models.common.Conv                      [256, 512, 3, 2]              
+  8                -1  1    656896  models.common.SPP                       [512, 512, [5, 9, 13]]        
+  9                -1  1   1182720  models.common.C3                        [512, 512, 1, False]          
+ 10                -1  1    131584  models.common.Conv                      [512, 256, 1, 1]              
+ 11                -1  1         0  torch.nn.modules.upsampling.Upsample    [None, 2, 'nearest']          
+ 12           [-1, 6]  1         0  models.common.Concat                    [1]                           
+ 13                -1  1    361984  models.common.C3                        [512, 256, 1, False]          
+ 14                -1  1     33024  models.common.Conv                      [256, 128, 1, 1]              
+ 15                -1  1         0  torch.nn.modules.upsampling.Upsample    [None, 2, 'nearest']          
+ 16           [-1, 4]  1         0  models.common.Concat                    [1]                           
+ 17                -1  1     90880  models.common.C3                        [256, 128, 1, False]          
+ 18                -1  1    147712  models.common.Conv                      [128, 128, 3, 2]              
+ 19          [-1, 14]  1         0  models.common.Concat                    [1]                           
+ 20                -1  1    296448  models.common.C3                        [256, 256, 1, False]          
+ 21                -1  1    590336  models.common.Conv                      [256, 256, 3, 2]              
+ 22          [-1, 10]  1         0  models.common.Concat                    [1]                           
+ 23                -1  1   1182720  models.common.C3                        [512, 512, 1, False]          
+ 24      [17, 20, 23]  1    229245  models.yolo.Detect                      [80, [[10, 13, 16, 30, 33, 23], [30, 61, 62, 45, 59, 119], [116, 90, 156, 198, 373, 326]], [128, 256, 512]]
+/home/aruix/.local/lib/python3.8/site-packages/torch/nn/functional.py:718: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at  /pytorch/c10/core/TensorImpl.h:1156.)
+  return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
+Model Summary: 283 layers, 7276605 parameters, 7276605 gradients, 17.1 GFLOPs
+
+Transferred 362/362 items from yolov5s.pt
+
+WARNING: Dataset not found, nonexistent paths: ['/home/aruix/library/datasets/coco/val2017.txt']
+Downloading https://github.com/ultralytics/yolov5/releases/download/v1.0/coco2017labels.zip to ../datasets/coco2017labels.zip...
