@@ -14,6 +14,6 @@ def init_ted():
 def read_cfg():
     """
     """
-    with io.open("../cfg.json") as f:
+    with io.open("./cfg.json") as f:
         logger.info("config load")
         return json.load(f)

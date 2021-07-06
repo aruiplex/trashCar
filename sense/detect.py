@@ -3,12 +3,13 @@
 Usage:
     $ python path/to/detect.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
-from utils.torch_utils import select_device, load_classifier, time_synchronized
-from utils.plots import colors, plot_one_box
-from utils.general import check_img_size, check_requirements, check_imshow, colorstr, non_max_suppression, \
+import os
+from sense.utils.torch_utils import select_device, load_classifier, time_synchronized
+from sense.utils.plots import colors, plot_one_box
+from sense.utils.general import check_img_size, check_requirements, check_imshow, colorstr, non_max_suppression, \
     apply_classifier, scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
-from utils.datasets import LoadStreams, LoadImages
-from models.experimental import attempt_load
+from sense.utils.datasets import LoadStreams, LoadImages
+from sense.models.experimental import attempt_load
 import loguru
 import argparse
 import sys
@@ -26,7 +27,7 @@ sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
 
 @torch.no_grad()
 def run(weights='trash.pt',  # model.pt path(s)
-        source=0,  # file/dir/URL/glob, 0 for webcam
+        source="0",  # file/dir/URL/glob, 0 for webcam
         imgsz=640,  # inference size (pixels)
         conf_thres=0.6,  # confidence threshold
         iou_thres=0.45,  # NMS IOU threshold
@@ -49,11 +50,9 @@ def run(weights='trash.pt',  # model.pt path(s)
         hide_conf=False,  # hide confidences
         half=False,  # use FP16 half-precision inference
         ):
-    save_img = not nosave and not source.endswith(
-        '.txt')  # save inference images
-    webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
-        ('rtsp://', 'rtmp://', 'http://', 'https://'))
-
+    save_img = False  # save inference images
+    webcam = True
+    logger.info(f"getcwd: { os.getcwd()}")
     # Directories
     save_dir = increment_path(Path(project) / name,
                               exist_ok=exist_ok)  # increment run
@@ -156,10 +155,13 @@ def run(weights='trash.pt',  # model.pt path(s)
                         c = int(cls)  # integer class
                         label = None if hide_labels else (
                             names[c] if hide_conf else f'{names[c]} {conf:.2f}')
+
+                        # aruix: here could be delete in production mode
                         plot_one_box(xyxy, im0, label=label, color=colors(
                             c, True), line_thickness=line_thickness)
-                        # loguru.logger.info(f"xyxy: {xyxy.pop()}, c: {c}")
-                        # !!!!!
+
+                        loguru.logger.debug(f"xyxy: {xyxy.pop()}, c: {c}")
+
                         if save_crop:
                             save_one_box(
                                 xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
@@ -203,5 +205,8 @@ def run(weights='trash.pt',  # model.pt path(s)
 
 
 def main_cv(opt):
+    # FILE = Path(__file__).absolute()
+    # sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
     logger.info("detect start")
-    run(**vars(opt))
+    # run(**vars(opt))
+    run(**opt)
