@@ -1,7 +1,10 @@
-import config.init
 import math
+import serial
 
-_ted = config.init.init()
+
+port_nano = serial.Serial(port="/dev/ttyAMA1", baudrate=115200)
+port_arm = serial.Serial(port="/dev/ttyAMA2", baudrate=115200)
+port_wheel = serial.Serial(port="/dev/ttyAMA3", baudrate=115200)
 
 
 def get_size(a, b):
@@ -37,7 +40,7 @@ def get_mess(i, L):
 
 def reset():
     VALUE = [0x48, 0x05, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
-    _ted.write(bytearray(VALUE))
+    port_wheel.write(bytearray(VALUE))
     return 0
 
 
@@ -69,10 +72,10 @@ def pwm_move(angle, speed):
     VALUE4 = get_mess(4, S4)
 
     # Send messages
-    _ted.write(bytearray(VALUE1))
-    _ted.write(bytearray(VALUE2))
-    _ted.write(bytearray(VALUE3))
-    _ted.write(bytearray(VALUE4))
+    port_wheel.write(bytearray(VALUE1))
+    port_wheel.write(bytearray(VALUE2))
+    port_wheel.write(bytearray(VALUE3))
+    port_wheel.write(bytearray(VALUE4))
     print(bytearray(VALUE1))
     print(bytearray(VALUE2))
     print(bytearray(VALUE3))
@@ -109,7 +112,18 @@ def pid_move(angle, distance, orientation):
     VALUE4 = get_mess(4, L4)
 
     # Send messages
-    _ted.write(bytearray(VALUE1))
-    _ted.write(bytearray(VALUE2))
-    _ted.write(bytearray(VALUE3))
-    _ted.write(bytearray(VALUE4))
+    port_wheel.write(bytearray(VALUE1))
+    port_wheel.write(bytearray(VALUE2))
+    port_wheel.write(bytearray(VALUE3))
+    port_wheel.write(bytearray(VALUE4))
+
+
+def dance():
+    pid_move(0, 500, 0)
+    pid_move(0, -500, 0)
+    pid_move(math.pi/2, 500, 0)
+    pid_move(-math.pi/2, 500, 0)
+
+
+if __name__ == "__main__":
+    dance()
