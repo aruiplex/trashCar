@@ -13,7 +13,7 @@ from itertools import repeat
 from multiprocessing.pool import ThreadPool, Pool
 from pathlib import Path
 from threading import Thread
-
+from loguru import logger
 import cv2
 import numpy as np
 import torch
@@ -34,7 +34,6 @@ img_formats = ['bmp', 'jpg', 'jpeg', 'png', 'tif', 'tiff',
 vid_formats = ['mov', 'avi', 'mp4', 'mpg', 'mpeg',
                'm4v', 'wmv', 'mkv']  # acceptable video suffixes
 num_threads = min(8, os.cpu_count())  # number of multiprocessing threads
-logger = logging.getLogger(__name__)
 
 # Get orientation exif tag
 for orientation in ExifTags.TAGS.keys():

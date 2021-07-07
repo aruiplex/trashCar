@@ -41,8 +41,7 @@
     alinux develop env rgb camera number: 4,
     Jetson nano product env rgb camera number: 2,
      */
-    // rgb_source: 4,
-    rgb_source: 10,
+    rgb_source: 4,
     set_laser: 360,
     /*
     The distance from camera to arm 

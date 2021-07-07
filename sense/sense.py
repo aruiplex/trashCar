@@ -90,6 +90,23 @@ class DepthDetector:
                      & (array > mean - std_range*std)]
 
 
+class AttentionDetector:
+    def __init__(self) -> None:
+        logger.info("Attention Detector Detector start")
+
+    def __compare_attention(self, obj):
+        try:
+            return obj['depth']
+        except Exception:
+            return math.inf
+
+    def attention(self, objs=None):
+        if not objs:
+            logger.warning("attention objs empty")
+        objs.sort(key=self.__compare_attention)
+        return objs[0]
+
+
 class PositionDetector:
     def __init__(self) -> None:
         logger.info("Position Detector start")

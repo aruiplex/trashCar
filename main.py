@@ -1,16 +1,16 @@
-import sys
 from sense.detect import main_cv
 from config.init import cfg
 from loguru import logger
 
 
-# todo:
-# FILE = Path(__file__).absolute()
-# sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
+def _init_logger():
+    logger.level("DEBUG")
+    logger.add("./run/{time}", retention=5, catch=True)
+    logger.bind(with_traceback=True).info("With traceback")
 
 
 def main():
-    logger.level("DEBUG")
+    _init_logger()
     # use json directly pass the arguments
     main_cv(cfg["cv"])
 

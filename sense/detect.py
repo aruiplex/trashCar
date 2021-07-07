@@ -53,8 +53,6 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
         half=False,  # use FP16 half-precision inference
         ):
     save_img = False  # save inference images
-    webcam = True
-    logger.info(f"getcwd: { os.getcwd()}")
 
     # Initialize
     set_logging()
@@ -76,6 +74,7 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
     logger.info("depth detector start")
     depth_detector = sense.sense.DepthDetector()
     position_detector = sense.sense.PositionDetector()
+    attention_detector = sense.sense.AttentionDetector()
     sender = Sender()
 
     if classify:
@@ -84,13 +83,9 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
                                'model']).to(device).eval()
 
     # Set Dataloader
-    vid_path, vid_writer = None, None
-    if webcam:
-        view_img = check_imshow()
-        cudnn.benchmark = True  # set True to speed up constant image size inference
-        dataset = LoadStreams(source, img_size=imgsz, stride=stride)
-    else:
-        dataset = LoadImages(source, img_size=imgsz, stride=stride)
+    view_img = check_imshow()
+    cudnn.benchmark = True  # set True to speed up constant image size inference
+    dataset = LoadStreams(source, img_size=imgsz, stride=stride)
 
     # Run inference
     if device.type != 'cpu':
@@ -117,7 +112,9 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
         if classify:
             pred = apply_classifier(pred, modelc, img, im0s)
 
-        # Process detections
+        # all objects in a frame
+        frame_obj_position = []
+        # Process detections / object analysis
         for i, det in enumerate(pred):  # detections per image
             p, s, im0, frame = path[i], f'{i}: ', im0s[i].copy(), dataset.count
             s += '%gx%g ' % img.shape[2:]  # print string
@@ -136,40 +133,46 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
-                    if save_txt:  # Write to file
-                        xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)
-                                          ) / gn).view(-1).tolist()  # normalized xywh
-                        # label format
-                        line = (cls, *xywh, conf) if save_conf else (cls, *xywh)
-                        with open(txt_path + '.txt', 'a') as f:
-                            f.write(('%g ' * len(line)).rstrip() % line + '\n')
-
                     if save_img or save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
                         label = None if hide_labels else (
                             names[c] if hide_conf else f'{names[c]} {conf:.2f}')
-                        # aruix: here could be delete in production mode
-                        plot_one_box(xyxy, im0, label=label, color=colors(
-                            c, True), line_thickness=line_thickness)
-
+                        # ----------- base operation to detect obj depth ---------------------------
                         point1, point2 = np.array([int(xyxy[0]), int(
                             xyxy[1])]), np.array([int(xyxy[2]), int(xyxy[3])])
                         depth = depth_detector.detect(point1, point2)
-                        (phi, coord) = position_detector.postition(
-                            depth, point1, point2)
-                        position = Position(
-                            c, phi, coordinate=coord).serialization()
-                        sender.send(position)
+                        # add a object postition in a
+                        frame_obj_position.append({"point1": point1,
+                                                   "point2": point2, "clz": c, "depth": depth})
                         logger.debug(
-                            f"point1: {point1}, point2: {point2} label: {label}")
-
-            # Print time (inference + NMS)
-            logger.debug(f'{s}Done. ({t2 - t1:.3f}s)')
+                            f"point1: {point1}, point2: {point2} label: {label} ({t2 - t1:.3f}s)")
+                        # -----------/ base operation to detect obj depth ---------------------------
+                        # aruix: here could be delete in production mode
+                        label += f"{depth}"
+                        plot_one_box(xyxy, im0, label=label, color=colors(
+                            c, True), line_thickness=line_thickness)
+            # ------------------- frame analysis ----------------------
+            if frame_obj_position != []:
+                obj = attention_detector.attention(frame_obj_position)
+                (phi, coord) = position_detector.postition(
+                    obj["depth"], obj["point1"], obj["point2"])
+                # calculate the obj position
+                position = Position(
+                    c, phi, coordinate=coord).serialization()
+                # port communication
+                sender.send(position)
+                # clean all objects in a frame
+                frame_obj_position = []
+                # Print time (inference + NMS)
+                logger.debug(f'One frame analysis Done.')
+            # ------------------- /frame analysis ----------------------
 
             # Stream results
             if view_img:
                 cv2.imshow(str(p), im0)
                 cv2.waitKey(1)  # 1 millisecond
+
+    # --------------------- end stream ------------------------------------
 
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
