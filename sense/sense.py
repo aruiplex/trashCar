@@ -91,20 +91,44 @@ class DepthDetector:
 
 
 class AttentionDetector:
+    """Keep the attention to a specific object from many objects.
+    1. pick the primary object for raspberry pi.
+    2. avoid due to the recognization error to loss primary object.
+    """
+
     def __init__(self) -> None:
+        self.arr = np.array([])
         logger.info("Attention Detector Detector start")
 
-    def __compare_attention(self, obj):
+    def _filter(self):
+        pass
+
+    def __compare_depth(self, obj):
         try:
             return obj['depth']
         except Exception:
             return math.inf
 
     def attention(self, objs=None):
+        # todo: need clz filter
         if not objs:
             logger.warning("attention objs empty")
-        objs.sort(key=self.__compare_attention)
-        return objs[0]
+        objs.sort(key=self.__compare_depth)
+        mean = np.mean(self.arr, axis=0)
+        std = np.std(self.arr, axis=0)
+        # self.arr = self.arr[(self.arr < mean + 2*std) &
+        #                     (self.arr > mean - 2*std)]
+        obj = objs[0]
+        if obj in range(self.arr < mean + 2*std, self.arr > mean - 2*std):
+            self.arr = np.append(self.arr)
+            # todo: how many data here?
+            if len(self.arr) >= 8:
+                self.arr = self.arr[1:]
+            return obj
+        else:
+            logger.warning(f"obj is cleaned {obj}, return {mean}")
+            obj["depth"] = mean
+            return obj
 
 
 class PositionDetector:

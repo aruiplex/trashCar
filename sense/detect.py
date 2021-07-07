@@ -118,8 +118,6 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
         for i, det in enumerate(pred):  # detections per image
             p, s, im0, frame = path[i], f'{i}: ', im0s[i].copy(), dataset.count
             s += '%gx%g ' % img.shape[2:]  # print string
-            # normalization gain whwh
-            gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(
@@ -181,8 +179,5 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
 
 
 def main_cv(opt):
-    # FILE = Path(__file__).absolute()
-    # sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
     logger.info("detect start")
-    # run(**vars(opt))
     run(**opt)

@@ -4,7 +4,7 @@ import json
 
 from loguru import logger
 
-_ted = config.init._init_ted()
+_port = config.init._init_ted()
 
 
 def readline():
@@ -35,7 +35,9 @@ def serve():
     """
     try:
         while True:
-            msg_raw = _ted.readline()
+            # todo default to be blocked
+            msg_raw = _port.readline().decode()
+            _port.write(b"200 OK")
             vaildate(msg_raw)
             msg = json.loads(msg_raw)
             yield msg
