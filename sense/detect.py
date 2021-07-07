@@ -3,19 +3,21 @@
 Usage:
     $ python path/to/detect.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
+from communication.position import Position
+from communication.sender import Sender
 import os
+import numpy as np
 from sense.utils.torch_utils import select_device, load_classifier, time_synchronized
 from sense.utils.plots import colors, plot_one_box
 from sense.utils.general import check_img_size, check_requirements, check_imshow, colorstr, non_max_suppression, \
     apply_classifier, scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
 from sense.utils.datasets import LoadStreams, LoadImages
 from sense.models.experimental import attempt_load
-import loguru
 import argparse
 import sys
 import time
 from pathlib import Path
-
+import sense.sense
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
@@ -26,7 +28,7 @@ sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
 
 
 @torch.no_grad()
-def run(weights='trash.pt',  # model.pt path(s)
+def run(weights='../sense/trash.pt',  # model.pt path(s)
         source="0",  # file/dir/URL/glob, 0 for webcam
         imgsz=640,  # inference size (pixels)
         conf_thres=0.6,  # confidence threshold
@@ -75,6 +77,12 @@ def run(weights='trash.pt',  # model.pt path(s)
 
     # Second-stage classifier
     classify = False
+
+    logger.info("depth detector start")
+    depth_detector = sense.sense.DepthDetector()
+    position_detector = sense.sense.PositionDetector()
+    sender = Sender()
+
     if classify:
         modelc = load_classifier(name='resnet50', n=2)  # initialize
         modelc.load_state_dict(torch.load('resnet50.pt', map_location=device)[
@@ -155,19 +163,23 @@ def run(weights='trash.pt',  # model.pt path(s)
                         c = int(cls)  # integer class
                         label = None if hide_labels else (
                             names[c] if hide_conf else f'{names[c]} {conf:.2f}')
-
                         # aruix: here could be delete in production mode
                         plot_one_box(xyxy, im0, label=label, color=colors(
                             c, True), line_thickness=line_thickness)
 
-                        loguru.logger.debug(f"xyxy: {xyxy.pop()}, c: {c}")
-
-                        if save_crop:
-                            save_one_box(
-                                xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
+                        point1, point2 = np.array([int(xyxy[0]), int(
+                            xyxy[1])]), np.array([int(xyxy[2]), int(xyxy[3])])
+                        depth = depth_detector.detect(point1, point2)
+                        (phi, coord) = position_detector.postition(
+                            depth, point1, point2)
+                        position = Position(
+                            c, phi, coordinate=coord).serialization()
+                        sender.send(position)
+                        logger.debug(
+                            f"point1: {point1}, point2: {point2} label: {label}")
 
             # Print time (inference + NMS)
-            print(f'{s}Done. ({t2 - t1:.3f}s)')
+            logger.debug(f'{s}Done. ({t2 - t1:.3f}s)')
 
             # Stream results
             if view_img:

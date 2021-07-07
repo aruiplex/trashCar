@@ -1,5 +1,5 @@
 # Dataset utils and dataloaders
-
+from config.init import cfg
 import glob
 import hashlib
 import json
@@ -299,10 +299,15 @@ class LoadStreams:  # multiple IP or RTSP cameras
             # camera settings:
             # cap = cv2.VideoCapture(s)
             """
-            The camera on /dev/video*
+            aruix: The camera on /dev/video*
             """
-            # cap = cv2.VideoCapture(4)
-            cap = cv2.VideoCapture(2)
+            camera_num = cfg["car_framework"]["rgb_source"]
+            if camera_num == 2:
+                logger.info("camera source: Jetson nano production mode")
+            elif camera_num == 4:
+                logger.info("camera source: alinux develop mode")
+
+            cap = cv2.VideoCapture(camera_num)
             assert cap.isOpened(), f'Failed to open {s}'
             w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))

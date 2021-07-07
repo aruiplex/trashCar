@@ -44,8 +44,17 @@ The config.json file specification
       [0.875, 0.125]
     ]
   },
+  /*
+  The car body 
+  */
   "car_framework": {
+    /*
+    The distance from camera to arm 
+     */
     "camera_bias_arm": 0,
+    /*
+    rgb camera parameters
+    */
     "rgb_camera": {
       "x_pixels": 640,
       "y_pixels": 480

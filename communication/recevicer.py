@@ -1,7 +1,7 @@
 import config.init
 import json
 
-_ted = config.init.init_ted()
+_ted = config.init._init_ted()
 
 
 def serve():

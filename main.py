@@ -1,11 +1,8 @@
-from pathlib import Path
 import sys
 from sense.detect import main_cv
-import config.init
+from config.init import cfg
 from loguru import logger
 
-# global configuration
-cfg = config.init.read_cfg()
 
 # todo:
 # FILE = Path(__file__).absolute()
