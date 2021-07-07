@@ -55,11 +55,6 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
     save_img = False  # save inference images
     webcam = True
     logger.info(f"getcwd: { os.getcwd()}")
-    # Directories
-    save_dir = increment_path(Path(project) / name,
-                              exist_ok=exist_ok)  # increment run
-    (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True,
-                                                          exist_ok=True)  # make dir
 
     # Initialize
     set_logging()
@@ -124,20 +119,10 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
 
         # Process detections
         for i, det in enumerate(pred):  # detections per image
-            if webcam:  # batch_size >= 1
-                p, s, im0, frame = path[i], f'{i}: ', im0s[i].copy(
-                ), dataset.count
-            else:
-                p, s, im0, frame = path, '', im0s.copy(), getattr(dataset, 'frame', 0)
-
-            p = Path(p)  # to Path
-            save_path = str(save_dir / p.name)  # img.jpg
-            txt_path = str(save_dir / 'labels' / p.stem) + \
-                ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
+            p, s, im0, frame = path[i], f'{i}: ', im0s[i].copy(), dataset.count
             s += '%gx%g ' % img.shape[2:]  # print string
             # normalization gain whwh
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]
-            imc = im0.copy() if save_crop else im0  # for save_crop
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(
@@ -185,30 +170,6 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
             if view_img:
                 cv2.imshow(str(p), im0)
                 cv2.waitKey(1)  # 1 millisecond
-
-            # Save results (image with detections)
-            if save_img:
-                if dataset.mode == 'image':
-                    cv2.imwrite(save_path, im0)
-                else:  # 'video' or 'stream'
-                    if vid_path != save_path:  # new video
-                        vid_path = save_path
-                        if isinstance(vid_writer, cv2.VideoWriter):
-                            vid_writer.release()  # release previous video writer
-                        if vid_cap:  # video
-                            fps = vid_cap.get(cv2.CAP_PROP_FPS)
-                            w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                            h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                        else:  # stream
-                            fps, w, h = 30, im0.shape[1], im0.shape[0]
-                            save_path += '.mp4'
-                        vid_writer = cv2.VideoWriter(
-                            save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
-                    vid_writer.write(im0)
-
-    if save_txt or save_img:
-        s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
-        print(f"Results saved to {save_dir}{s}")
 
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)

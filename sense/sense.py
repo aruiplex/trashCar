@@ -26,7 +26,7 @@ class DepthDetector:
         depth_sensor = device.query_sensors()[0]
         # set max
         set_laser = cfg["car_framework"]["set_laser"]
-        logger.debug("set laser")
+        logger.info("set laser")
         depth_sensor.set_option(rs.option.laser_power, set_laser)
         # ------------------------------------------------------
 
