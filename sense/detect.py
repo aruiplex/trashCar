@@ -112,7 +112,7 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
         if classify:
             pred = apply_classifier(pred, modelc, img, im0s)
 
-        # all objects in a frame
+        # all objects in ONE frame, in the available form
         frame_obj_position = []
         # Process detections / object analysis
         for i, det in enumerate(pred):  # detections per image
@@ -138,20 +138,25 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
                         # ----------- base operation to detect obj depth ---------------------------
                         point1, point2 = np.array([int(xyxy[0]), int(
                             xyxy[1])]), np.array([int(xyxy[2]), int(xyxy[3])])
+                        # get the distance of the object
                         depth = depth_detector.detect(point1, point2)
+                        obj_position = {
+                            "point1": point1, "point2": point2, "clz": c, "depth": depth}
                         # add a object postition in a
-                        frame_obj_position.append({"point1": point1,
-                                                   "point2": point2, "clz": c, "depth": depth})
+                        frame_obj_position.append(obj_position)
                         logger.debug(
                             f"point1: {point1}, point2: {point2} label: {label} ({t2 - t1:.3f}s)")
                         # -----------/ base operation to detect obj depth ---------------------------
-                        # aruix: here could be delete in production mode
+                        # todo: here could be delete in production mode
                         label += f"{depth}"
                         plot_one_box(xyxy, im0, label=label, color=colors(
                             c, True), line_thickness=line_thickness)
+                        # todo/: here could be delete in production mode
             # ------------------- frame analysis ----------------------
             if frame_obj_position != []:
+                # get the major target
                 obj = attention_detector.attention(frame_obj_position)
+                # get target position
                 (phi, coord) = position_detector.postition(
                     obj["depth"], obj["point1"], obj["point2"])
                 # calculate the obj position

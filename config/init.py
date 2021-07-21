@@ -11,7 +11,9 @@ def _init_ted() -> serial.Serial:
     Open the serial port
     """
     # aruix: stub
-    return serial.Serial(port="/dev/ttyAMA1", baudrate=115200)
+    # return serial.Serial(port="/dev/ttyAMA1", baudrate=115200)
+    s = Stub()
+    return s._init_ted()
 
 
 def _read_cfg() -> dict:

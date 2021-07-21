@@ -104,6 +104,9 @@ class AttentionDetector:
         pass
 
     def __compare_depth(self, obj):
+        """This function is only used to sort elements in the list.
+        Sort the list base on the key: depth.
+        """
         try:
             return obj['depth']
         except Exception:
@@ -111,23 +114,37 @@ class AttentionDetector:
 
     def attention(self, objs=None):
         # todo: need clz filter
+        """get a primary object in a objs list. 
+
+        Args:
+            objs ([type], optional): 
+            The obj notation:
+                {"point1": point1, "point2": point2, "clz": c, "depth": depth}. 
+            Defaults to None.
+
+        Returns:
+            [type]: [description]
+        """
+        objs.sort(key=self.__compare_depth)
+        # get the nearest
+        obj = objs[0]
         if not objs:
             logger.warning("attention objs empty")
-        objs.sort(key=self.__compare_depth)
-        mean = np.mean(self.arr, axis=0)
-        std = np.std(self.arr, axis=0)
-        # self.arr = self.arr[(self.arr < mean + 2*std) &
-        #                     (self.arr > mean - 2*std)]
-        obj = objs[0]
-        if obj in range(self.arr < mean + 2*std, self.arr > mean - 2*std):
-            self.arr = np.append(self.arr)
-            # todo: how many data here?
-            if len(self.arr) >= 8:
+        # Judge the obj distance in the correct range
+        # todo: how many data here store as reference?
+        if len(self.arr) >= 8:
+
+            mean = np.mean(self.arr, axis=0)
+            std = np.std(self.arr, axis=0)
+            # if object distance is a correct value
+            if obj in range(self.arr < mean + 2*std, self.arr > mean - 2*std):
+                self.arr = np.append(self.arr)
                 self.arr = self.arr[1:]
-            return obj
+                return obj
+            else:
+                pass
         else:
-            logger.warning(f"obj is cleaned {obj}, return {mean}")
-            obj["depth"] = mean
+            self.arr = np.append(self.arr, obj)
             return obj
 
 
