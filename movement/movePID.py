@@ -2,7 +2,7 @@ import math
 import time
 
 import serial
-from loguru import logger
+# from loguru import logger
 
 # from config.init import cfg
 
@@ -18,7 +18,7 @@ car_length = 0.29
 car_width = 0.24
 
 
-def move(angle, distance, speed=4000):
+def move(angle, distance, speed=4000, duration=1):
     """Move car with angle and time in power
 
     Args:
@@ -26,6 +26,7 @@ def move(angle, distance, speed=4000):
         time (float): 
         power (float): 
     """
+    distance = distance * 1350 / 0.25
     # Calculate the position of each motor
     dx = distance * math.cos(angle + math.pi/2)
     dy = distance * math.sin(angle + math.pi/2)
@@ -45,26 +46,26 @@ def move(angle, distance, speed=4000):
     cmd3 = __generate_cmd(d3, s3)
     cmd4 = __generate_cmd(d4, s4)
     cmds = [cmd1, cmd2, cmd3, cmd4]
-    __send_cmd(cmds)
+    __send_cmd(cmds, duration)
 
 
-def rotate(angle, speed=4000):
+def rotate(angle, speed=4000, duration=1):
     """car self rotate,
-    counter-clock is positive, clock is negative
+    counter-clockwise is positive, clockwise is negative
 
     Args:
         angle: radian format.
         speed: max=4000
     """
     # Calculate the position of each motor
-    ang = round(angle * (car_length / 2 + car_width / 2))
-    d1 = ang
-    d2 = -ang
-    d3 = -ang
+    dis = round(angle * (car_length / 2 + car_width / 2) * 1350 / 0.25)
+    d1 = dis
+    d2 = -dis
+    d3 = -dis
     # The minus sign for motor 2 and 3 is due to their installation direction
-    d4 = ang
+    d4 = dis
     # Calculate the speed of each motor
-    ang_v = round(speed * (car_length / 2 + car_width / 2))
+    ang_v = round(speed * (car_length / 2 + car_width / 2) * 1350 / 0.25)
     s1 = ang_v
     s2 = -ang_v
     s3 = -ang_v
@@ -75,11 +76,11 @@ def rotate(angle, speed=4000):
     cmd3 = __generate_cmd(d3, s3)
     cmd4 = __generate_cmd(d4, s4)
     cmds = [cmd1, cmd2, cmd3, cmd4]
-    __send_cmd(cmds)
+    __send_cmd(cmds, duration)
 
 
 def __reset():
-    return [0xaa, 0x4d, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x39]
+    return bytearray([0xaa, 0x4d, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x39])
 
 
 def __generate_cmd(d, s) -> bytearray:
@@ -94,13 +95,23 @@ def __generate_cmd(d, s) -> bytearray:
     return bytearray([0xaa, 0x59, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xaa, 0x70, distance3, distance2, distance1, distance0, speed1, speed0, 0xff, 0xff])
 
 
-def __send_cmd(cmds):
+def __send_cmd(cmds, duration):
     """Send command to serial port
 
     Args:
         cmds (bytearray): command
     """
+    # reset
+    print("sleep")
+    time.sleep(duration)
     for cmd, wheel in zip(cmds, wheels):
+        wheel.write(__reset())
+    print("reset")
+
+    time.sleep(0.02)
+    # write command
+    for cmd, wheel in zip(cmds, wheels):
+        print("write commands")
         wheel.write(cmd)
 
 
@@ -112,8 +123,9 @@ def __send_cmd_stub(cmds):
     """
     wheels = [0, 1, 2, 3]
     for cmd, wheel in zip(cmds, wheels):
-        logger.debug(f"{cmd} perform in wheel {wheel}")
+        pass
+        # logger.debug(f"{cmd} perform in wheel {wheel}")
 
 
 if __name__ == "__main__":
-    rotate(math.pi, 4000)
+    rotate(-math.pi, 4000)
