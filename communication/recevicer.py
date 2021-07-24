@@ -57,5 +57,3 @@ class Listener():
                 obj = most_common(message_queue)
                 message_queue.clear()
                 return obj
-
-
