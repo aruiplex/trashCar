@@ -47,6 +47,8 @@
     The distance from camera to arm 
      */
     camera_bias_arm: 0,
+    // the camera height from floor
+    camera_height:0,
     /*
     rgb camera parameters
     1. x_pixels: Verticle pixels number 
