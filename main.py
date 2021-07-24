@@ -5,7 +5,7 @@ from loguru import logger
 
 def _init_logger():
     logger.level("DEBUG")
-    logger.add("./run/{time}", retention=5, catch=True)
+    logger.add("./run/{time}.log", retention=5, catch=True)
     logger.bind(with_traceback=True).info("With traceback")
 
 

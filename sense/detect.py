@@ -4,7 +4,7 @@ Usage:
     $ python path/to/detect.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
 from communication.position import Position
-from communication.sender import Sender
+from communication.sender import Sender, SenderStub
 import os
 import numpy as np
 from sense.utils.torch_utils import select_device, load_classifier, time_synchronized
@@ -47,7 +47,7 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
         project='runs/detect',  # save results to project/name
         name='exp',  # save results to project/name
         exist_ok=False,  # existing project/name ok, do not increment
-        line_thickness=3,  # bounding box thickness (pixels)
+        line_thickness=2,  # bounding box thickness (pixels)
         hide_labels=False,  # hide labels
         hide_conf=False,  # hide confidences
         half=False,  # use FP16 half-precision inference
@@ -75,7 +75,7 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
     depth_detector = sense.sense.DepthDetector()
     position_detector = sense.sense.PositionDetector()
     attention_detector = sense.sense.AttentionDetector()
-    sender = Sender()
+    sender = SenderStub()
 
     if classify:
         modelc = load_classifier(name='resnet50', n=2)  # initialize
@@ -148,17 +148,22 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
                             f"point1: {point1}, point2: {point2} label: {label} ({t2 - t1:.3f}s)")
                         # -----------/ base operation to detect obj depth ---------------------------
                         # todo: here could be delete in production mode
-                        label += f"{depth}"
+                        label += f"d: {depth:.3f}m"
                         plot_one_box(xyxy, im0, label=label, color=colors(
                             c, True), line_thickness=line_thickness)
                         # todo/: here could be delete in production mode
             # ------------------- frame analysis ----------------------
             if frame_obj_position != []:
                 # get the major target
-                obj = attention_detector.attention(frame_obj_position)
+                # TODO: prime attition has bugs.
+                # obj = attention_detector.attention(frame_obj_position)
+                obj = attention_detector.attention_min(frame_obj_position)
                 # get target position
                 (phi, coord) = position_detector.postition(
                     obj["depth"], obj["point1"], obj["point2"])
+                poi = f"{names[obj['clz']]}({coord[0]:.2f}, {coord[1]:.2f}, {depth:.3f})m"
+                plot_one_box(xyxy, im0, label=poi, color=colors(
+                    c, True), line_thickness=2)
                 # calculate the obj position
                 position = Position(
                     c, phi, coordinate=coord).serialization()
@@ -176,10 +181,6 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
                 cv2.waitKey(1)  # 1 millisecond
 
     # --------------------- end stream ------------------------------------
-
-    if update:
-        strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
-
     print(f'Done. ({time.time() - t0:.3f}s)')
 
 

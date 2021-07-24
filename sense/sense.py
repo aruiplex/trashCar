@@ -112,6 +112,17 @@ class AttentionDetector:
         except Exception:
             return math.inf
 
+    def attention_min(self, objs):
+        """The strategy of attention: find the minimum distance of the objects in a frame
+
+        Args:
+            objs (dict): the objects array
+
+        Returns:
+            obj: the object with attention.
+        """
+        return min(objs, key=lambda x: x['depth'])
+
     def attention(self, objs=None):
         # todo: need clz filter
         """get a primary object in a objs list. 
@@ -133,7 +144,8 @@ class AttentionDetector:
         # Judge the obj distance in the correct range
         # todo: how many data here store as reference?
         if len(self.arr) >= 8:
-
+            # bugs here, this is a dict array, cannot directly plus together to get sum:
+            logger.debug(f"Attation arr: {self.arr}")
             mean = np.mean(self.arr, axis=0)
             std = np.std(self.arr, axis=0)
             # if object distance is a correct value

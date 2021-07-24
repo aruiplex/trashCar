@@ -26,3 +26,11 @@ class Sender:
             if counter >= 5:
                 logger.error(f"One communication is not send!\n{data}")
                 break
+
+
+class SenderStub:
+    def __init__(self) -> None:
+        logger.info("sender init")
+
+    def send(self, data: str):
+        logger.success(f"data: {data}, has been sent.")
