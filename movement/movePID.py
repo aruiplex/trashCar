@@ -67,8 +67,8 @@ def rotate(angle, speed=4000, duration=1):
     # Calculate the speed of each motor
     ang_v = round(speed * (car_length / 2 + car_width / 2) * 1350 / 0.25)
     s1 = ang_v
-    s2 = -ang_v
-    s3 = -ang_v
+    s2 = ang_v
+    s3 = ang_v
     # The minus sign for motor 2 and 3 is due to their installation direction
     s4 = ang_v
     cmd1 = __generate_cmd(d1, s1)
