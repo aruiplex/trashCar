@@ -1,56 +1,40 @@
 import io
-import config.init
 import json
+import socket
 
 from loguru import logger
 
-_port = config.init._init_ted()
+
+class Listener():
+
+    def __init__(self):
+        """listen on the port and pass the connect socket to the receiver
+        """
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        port = 7021
+        self.s.bind(("", port))
+        self.s.listen(6)
+        print(f"Server is listening on 127.0.0.1:{port}")
 
 
-def readline():
-    null_line_number = 0
-    f = io.open("./position.py", "r")
-    while True:
-        line = f.readline()
-        yield line
-
-        if line == "":
-            null_line_number += 1
-
-        if null_line_number == 5:
-            raise EOFError
-
-
-def vaildate(line):
-    null_line_number = 0
-    if line == "":
-        null_line_number += 1
-    if null_line_number == 5:
-        raise Exception("end of trash car")
-
-
-def serve():
-    """
-    serial port server
-    """
-    try:
+    def __listen(self):
+        connection, addr = self.s.accept()
+        print(f"Connected by {addr}")
+    
+        data = connection.recv(1024)
+        print(f"data: {data}")
+        return data
+    
+    def recevice(self):
         while True:
-            # todo default to be blocked
-            msg_raw = _port.readline().decode()
-            _port.write(b"200 OK")
-            vaildate(msg_raw)
-            msg = json.loads(msg_raw)
-            yield msg
-    except Exception as e:
-        logger.warning(e)
+            data = self.__listen()
+            if data == b"bye":
+                print("shutdown")
+                break
+            
+            l = data.decode()
+            
 
 
-if __name__ == "__main__":
-    reader = readline()
-    # while True:
-    try:
-        for i in range(0, 100):
-            print(next(reader))
-    except EOFError:
-        print("//EOF")
-        # print(next(reader))
+l = Listener()
+l.recevice()

@@ -38,22 +38,30 @@ def generate_cmd(s) -> bytearray:
 def operation(s):
     return s**2
 
+
 def abcd(aaaa):
     return aaaa["a"]
 
-min([{"a": 2}, {"a": 1}, {"a": 3}], key=abcd)
+# min([{"a": 2}, {"a": 1}, {"a": 3}], key=abcd)
 
 
+def most_common(lst):
+    return max(set(lst), key=lst.count)
+
+
+lst = [
+    "c0",
+    "c0",
+    "c1",
+    "c1",
+    "c1",
+]
 
 
 def my_min(l, key=None):
     l.sort(key=key)
     return real
 
+
 if __name__ == "__main__":
-    import numpy as np
-    ss = np.array([1, 2, 3, 4, 5])
-    # ans = []
-    # for s in ss:
-    #     ans.append(generate_cmd(s))
-    print(operation(ss))
+    print(most_common(lst))
