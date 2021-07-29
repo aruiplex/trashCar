@@ -3,8 +3,8 @@
   * The device name, which will cause program different 
   name : pi / nano
   */
-  // this: "pi",
-  this: "nano",
+  this: "pi",
+//   this: "nano",
 
   /*
   the mode of env 

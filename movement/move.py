@@ -2,14 +2,17 @@ import math
 import time
 import serial
 from loguru import logger
+from config.init import cfg
 
-arm_port = serial.Serial(port="/dev/ttyAMA0", baudrate=9600)
 
-wheel0 = serial.Serial(port="/dev/ttyAMA1", baudrate=115200)
-wheel1 = serial.Serial(port="/dev/ttyAMA2", baudrate=115200)
-wheel2 = serial.Serial(port="/dev/ttyAMA3", baudrate=115200)
-wheel3 = serial.Serial(port="/dev/ttyAMA4", baudrate=115200)
-wheels = [wheel0, wheel1, wheel2, wheel3]
+if cfg["this"] == "pi":
+    arm_port = serial.Serial(port="/dev/ttyAMA0", baudrate=9600)
+
+    wheel0 = serial.Serial(port="/dev/ttyAMA1", baudrate=115200)
+    wheel1 = serial.Serial(port="/dev/ttyAMA2", baudrate=115200)
+    wheel2 = serial.Serial(port="/dev/ttyAMA3", baudrate=115200)
+    wheel3 = serial.Serial(port="/dev/ttyAMA4", baudrate=115200)
+    wheels = [wheel0, wheel1, wheel2, wheel3]
 
 
 car_length = 0.29
