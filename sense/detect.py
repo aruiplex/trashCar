@@ -3,25 +3,32 @@
 Usage:
     $ python path/to/detect.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
-from communication.position import Position
-from communication.sender import Sender
-import os
-import numpy as np
-from sense.utils.torch_utils import select_device, load_classifier, time_synchronized
-from sense.utils.plots import colors, plot_one_box
-from sense.utils.general import check_img_size, check_requirements, check_imshow, colorstr, non_max_suppression, \
-    apply_classifier, scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
-from sense.utils.datasets import LoadStreams, LoadImages
-from sense.models.experimental import attempt_load
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
-import sense.sense
+
 import cv2
+import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
+from communication.position import Position
+from communication.sender import Sender
+from config.init import cfg
 from loguru import logger
+
+import sense.sense
+from sense.models.experimental import attempt_load
+from sense.utils.datasets import LoadImages, LoadStreams
+from sense.utils.general import (apply_classifier, check_img_size,
+                                 check_imshow, check_requirements, colorstr,
+                                 increment_path, non_max_suppression,
+                                 save_one_box, scale_coords, set_logging,
+                                 strip_optimizer, xyxy2xywh)
+from sense.utils.plots import colors, plot_one_box
+from sense.utils.torch_utils import (load_classifier, select_device,
+                                     time_synchronized)
 
 FILE = Path(__file__).absolute()
 sys.path.append(FILE.parents[0].as_posix())  # add yolov5/ to path
@@ -68,19 +75,11 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
     if half:
         model.half()  # to FP16
 
-    # Second-stage classifier
-    classify = False
-
     logger.info("depth detector start")
     depth_detector = sense.sense.DepthDetector()
     position_detector = sense.sense.PositionDetector()
     attention_detector = sense.sense.AttentionDetector()
     sender = Sender()
-
-    if classify:
-        modelc = load_classifier(name='resnet50', n=2)  # initialize
-        modelc.load_state_dict(torch.load('resnet50.pt', map_location=device)[
-                               'model']).to(device).eval()
 
     # Set Dataloader
     view_img = check_imshow()
@@ -107,10 +106,6 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
         pred = non_max_suppression(
             pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
         t2 = time_synchronized()
-
-        # Apply Classifier
-        if classify:
-            pred = apply_classifier(pred, modelc, img, im0s)
 
         # all objects in ONE frame, in the available form
         frame_obj_position = []
@@ -147,11 +142,12 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
                         logger.debug(
                             f"point1: {point1}, point2: {point2} label: {label} ({t2 - t1:.3f}s)")
                         # -----------/ base operation to detect obj depth ---------------------------
-                        # todo: here could be delete in production mode
-                        label += f"d: {depth:.3f}m"
-                        plot_one_box(xyxy, im0, label=label, color=colors(
-                            c, True), line_thickness=line_thickness)
-                        # todo/: here could be delete in production mode
+                        if cfg["mode"] == "dev":
+                            # todo: here could be delete in production mode
+                            label += f"d: {depth:.3f}m"
+                            plot_one_box(xyxy, im0, label=label, color=colors(
+                                c, True), line_thickness=line_thickness)
+                            # todo/: here could be delete in production mode
             # ------------------- frame analysis ----------------------
             if frame_obj_position != []:
                 # get the major target
@@ -161,14 +157,15 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
                 # get target position
                 (phi, coord) = position_detector.postition(
                     obj["depth"], obj["point1"], obj["point2"])
-                poi = f"{names[obj['clz']]}({coord[0]:.2f}, {coord[1]:.2f}, {depth:.3f})m"
-                plot_one_box(xyxy, im0, label=poi, color=colors(
-                    c, True), line_thickness=2)
+                if cfg["mode"] == "dev":    
+                    poi = f"{names[obj['clz']]}({coord[0]:.2f}, {coord[1]:.2f}, {depth:.3f})m"
+                    plot_one_box(xyxy, im0, label=poi, color=colors(
+                        c, True), line_thickness=2)
                 # calculate the obj position
                 position = Position(
                     names[c] , phi, coordinate=coord).serialization()
                 # port communication
-                sender.send_stub(position)
+                sender.send(position)
                 # clean all objects in a frame
                 frame_obj_position = []
                 # Print time (inference + NMS)

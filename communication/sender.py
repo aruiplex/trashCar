@@ -1,6 +1,10 @@
 import json
 import socket
+import time
 from loguru import logger
+from config.init import cfg
+
+pi_ip = cfg["network"]["pi"]
 
 
 class Sender():
@@ -13,15 +17,20 @@ class Sender():
         Args:
             data (json): the date need to send 
         """
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect(("127.0.0.1", 7021))
-        raw = json.dumps(data).encode()
-        self.s.sendall(raw)
+        ok = False
+        while not ok:
+            try:
+                self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.s.connect((pi_ip, 7021))
+                raw = json.dumps(data).encode()
+                self.s.sendall(raw)
+                ok = True
+            except:
+                time.sleep(0.2)
+    # def send_stub(self, data: json):
+    #     raw = json.dumps(data).encode()
+    #     logger.success(raw)
 
-    def send_stub(self, data: json):
-        raw = json.dumps(data).encode()
-        logger.success(raw)
-
-
-s = Sender()
-s.send({"a": 1})
+# def test():
+# s = Sender()
+# s.send({"clz": "cup", "phi": -0.09657364535103545, "coordinate": [-0.02523331561960583, 0.2604729354281893]})

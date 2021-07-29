@@ -1,6 +1,11 @@
-import socket
-from loguru import logger
 import json
+import math
+import socket
+import time
+
+from config.init import cfg
+from loguru import logger
+from movement.move import move
 
 message_queue = []
 
@@ -23,11 +28,12 @@ class Listener():
         self.s.listen(6)
         logger.success(f"Server is listening on 127.0.0.1:{port}")
 
-    def __listen(self)-> str:
+    def __listen(self) -> str:
         connection, addr = self.s.accept()
         with connection:
             logger.info(f"Connected by {addr}")
             data = bytearray()
+            # while: to recevice all data
             while True:
                 r = connection.recv(1024)
                 if not r:
@@ -36,6 +42,7 @@ class Listener():
             return data.decode()
 
     def recevice(self):
+        # to get 8 item
         while True:
             raw = self.__listen()
             logger.info(f"data: {raw}")
@@ -45,12 +52,10 @@ class Listener():
             if not raw:
                 continue
             data = json.loads(raw)
-            logger.info(data)
             message_queue.append(data)
-            # if len(message_queue) >= 8:
-            #     obj =  most_common(message_queue)
-            #     message_queue.
+            if len(message_queue) >= 8:
+                obj = most_common(message_queue)
+                message_queue.clear()
+                return obj
 
 
-l = Listener()
-l.recevice()

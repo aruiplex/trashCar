@@ -1,4 +1,17 @@
 {
+  /*
+  * The device name, which will cause program different 
+  name : pi / nano
+  */
+  // this: "pi",
+  this: "nano",
+
+  /*
+  the mode of env 
+  */
+  //   mode: "prod",
+  mode: "dev",
+
   cv: {
     //  weight file location .pt file
     weights: "./sense/trash.pt",
@@ -9,9 +22,7 @@
     iou_thres: 0.45,
   },
   data_filter: {
-    /*
-    data filter range, [n * -sigma, n * sigma]
-    */
+    // data filter range, [n * -sigma, n * sigma]
     std_range: 3,
     /*
     The x sampling method for obj depth detection,
@@ -33,9 +44,8 @@
       [0.875, 0.125],
     ],
   },
-  /*
-  The car body total framework 
-  */
+
+  //   The car body total framework
   car_framework: {
     /*
     alinux develop env rgb camera number: 4,
@@ -44,12 +54,10 @@
      */
     rgb_source: 4,
     set_laser: 360,
-    /*
-    The distance from camera to arm 
-     */
+    //The distance from camera to arm
     camera_bias_arm: 0,
     // the camera height from floor
-    camera_height:0,
+    camera_height: 0,
     /*
     rgb camera parameters
     1. x_pixels: Verticle pixels number 
@@ -66,5 +74,21 @@
       l3: 0.23,
       phi: -90,
     },
+  },
+
+  network: {
+    pi: "10.0.0.10",
+    nano: "10.0.0.11",
+  },
+
+  /*
+    物品的相对位置，最左边的位置是0
+  */
+  items: {
+    bottle: 0,
+    paper: 0,
+    orange: 1,
+    battery: 2,
+    cup: 3,
   },
 }
