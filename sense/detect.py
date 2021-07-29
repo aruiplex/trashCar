@@ -4,7 +4,7 @@ Usage:
     $ python path/to/detect.py --source path/to/img.jpg --weights yolov5s.pt --img 640
 """
 from communication.position import Position
-from communication.sender import Sender, SenderStub
+from communication.sender import Sender
 import os
 import numpy as np
 from sense.utils.torch_utils import select_device, load_classifier, time_synchronized
@@ -75,7 +75,7 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
     depth_detector = sense.sense.DepthDetector()
     position_detector = sense.sense.PositionDetector()
     attention_detector = sense.sense.AttentionDetector()
-    sender = SenderStub()
+    sender = Sender()
 
     if classify:
         modelc = load_classifier(name='resnet50', n=2)  # initialize
@@ -166,9 +166,9 @@ def run(weights='../sense/trash.pt',  # model.pt path(s)
                     c, True), line_thickness=2)
                 # calculate the obj position
                 position = Position(
-                    c, phi, coordinate=coord).serialization()
+                    names[c] , phi, coordinate=coord).serialization()
                 # port communication
-                sender.send(position)
+                sender.send_stub(position)
                 # clean all objects in a frame
                 frame_obj_position = []
                 # Print time (inference + NMS)

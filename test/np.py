@@ -2,9 +2,6 @@ from typing import Callable
 import numpy as np
 import json
 
-from numpy.core.fromnumeric import sort
-
-
 def get_cfg_as_sampling():
     with open("../cfg.json", "r") as f:
         sample_matrix_base = json.load(f)["data_filter"]["sampling_method_x"]
@@ -45,16 +42,28 @@ def abcd(aaaa):
 # min([{"a": 2}, {"a": 1}, {"a": 3}], key=abcd)
 
 
-def most_common(lst):
-    return max(set(lst), key=lst.count)
+    # return max(lst, key=[lambda x: x["clz"]].count)
+
+# def run():
+#     data = {"clz": "cup", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]}
+#     max()
 
 
 lst = [
-    "c0",
-    "c0",
-    "c1",
-    "c1",
-    "c1",
+    {"clz": "cup", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "paper", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "paper", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "paper", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "paper", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "paper", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "paper", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "paper", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "cup", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "cup", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "paper", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "cup", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]},
+    {"clz": "orange", "phi": 0.1274307249477626, "coordinate": [0.0, 0.0]}
+
 ]
 
 
@@ -65,3 +74,4 @@ def my_min(l, key=None):
 
 if __name__ == "__main__":
     print(most_common(lst))
+    # print("helloworld")
