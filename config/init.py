@@ -12,7 +12,7 @@ def _read_cfg() -> dict:
     """
     with io.open("./cfg.json5") as f:
         logger.info("config load")
-        return json5.load(f)
+        return json5.load(f, encoding="utf-8")
 
 
 # global configuration

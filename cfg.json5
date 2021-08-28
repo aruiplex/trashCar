@@ -3,8 +3,8 @@
   * The device name, which will cause program different 
   name : pi / nano
   */
-  this: "pi",
-//   this: "nano",
+//   this: "pi",
+  this: "nano",
 
   /*
   the mode of env 
@@ -52,7 +52,7 @@
     Jetson nano product env rgb camera number: 2,
     windows in my laptop is also: 2
      */
-    rgb_source: 4,
+    rgb_source: 2,
     set_laser: 360,
     //The distance from camera to arm
     camera_bias_arm: 0,
@@ -77,12 +77,11 @@
   },
 
   network: {
-    pi: "10.0.0.10",
-    nano: "10.0.0.11",
+    pi: "192.168.0.10",
+    nano: "192.168.0.11",
   },
 
   /*
-    物品的相对位置，最左边的位置是0
   */
   items: {
     bottle: 0,
