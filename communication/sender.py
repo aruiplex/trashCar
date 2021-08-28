@@ -17,17 +17,16 @@ class Sender():
         Args:
             data (json): the date need to send 
         """
-        logger.info(data)
-        # ok = False
-        # while not ok:
-        #     try:
-        #         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #         self.s.connect((pi_ip, 7021))
-        #         raw = json.dumps(data).encode()
-        #         self.s.sendall(raw)
-        #         ok = True
-        #     except:
-        #         time.sleep(0.2)
+        ok = False
+        while not ok:
+            try:
+                self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.s.connect((pi_ip, 7021))
+                raw = json.dumps(data).encode()
+                self.s.sendall(raw)
+                ok = True
+            except:
+                time.sleep(0.2)
     # def send_stub(self, data: json):
     #     raw = json.dumps(data).encode()
     #     logger.success(raw)
