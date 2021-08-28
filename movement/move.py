@@ -19,33 +19,46 @@ car_length = 0.29
 
 car_width = 0.24
 
+bias = math.pi/45
 
 def minus_1():
-    pass
+    # move(math.pi/15, 0.8, 4000, 0)
+    move(math.pi/25+bias, 0.8, 4000, 0)
+    # move(math.pi/12, 0.8, 4000, 0)
 
 
 def minus_2():
-    pass
+    # move(math.pi/11, 0.82, 4000, 0)
+    # move(math.pi/10, 0.82, 4000, 0)
+    move(math.pi/20+bias, 0.82, 4000, 0)
+    # move(math.pi/9.8, 0.82, 4000, 0)
+    # move(math.pi/9, 0.8, 4000, 0)
 
 
 def minus_3():
-    pass
+    move(math.pi/10+bias, 0.85, 4000, 0)
+    # move(math.pi/7, 0.85, 4000, 0)
+
 
 
 def plus_1():
-    pass
+    move(-math.pi/15+bias, 0.8, 4000, 0)
+
 
 
 def plus_2():
-    pass
+    move(-math.pi/10.5+bias, 0.82, 4000, 0)
+
 
 
 def plus_3():
-    pass
+    move(-math.pi/8+bias, 0.85, 4000, 0)
 
 
 def direct():
-    pass
+    # move(math.pi/45, 0.8, 4000, 0)
+    move(bias, 0.8, 4000, 0)
+
 
 
 move_gap = {
@@ -63,32 +76,47 @@ def perform_kick_left():
     return bytearray([0x55, 0x55, 0x05, 0x06, 0x06, 0x01, 0x00])
 
 
+def perform_init():
+    arm_port.write(bytearray([0x55, 0x55, 0x05, 0x06, 0x01, 0x01, 0x00]))
+
+
 def perform_block():
-    return bytearray([0x55, 0x55, 0x05, 0x06, 0x07, 0x01, 0x00])
+    arm_port.write(bytearray([0x55, 0x55, 0x05, 0x06, 0x03, 0x01, 0x00]))
 
 
-def perform_cancel_block():
-    return bytearray([0x55, 0x55, 0x05, 0x06, 0x08, 0x01, 0x00])
+def perform_block_cancel():
+    arm_port.write(bytearray([0x55, 0x55, 0x05, 0x06, 0x04, 0x01, 0x00]))
+
 
 
 def perform_right_kick():
-    return bytearray([0x55, 0x55, 0x05, 0x06, 0x09, 0x01, 0x00])
+    return bytearray([0x55, 0x55, 0x05, 0x06, 0x07, 0x01, 0x00])
+
+
+def perform_strech():
+    return arm_port.write(bytearray([0x55, 0x55, 0x05, 0x06, 0x02, 0x01, 0x00]))
 
 
 def kick():
-    # kick
+    # 后退
+    move(math.pi, 0.16, 4000, 0)
+    time.sleep(5)
+    # 在这踢左面两下
     arm_port.write(perform_kick_left())
-    time.sleep(6)
-    move(0, 0.2, 4000, 2)
-    # time.sleep(4)
-    # arm_port.write(perform_block())
-    move(-math.pi/2, 1, 4000, 2)
-    # time.sleep(2)
-    # arm_port.write(perform_cancel_block())
-    move(math.pi, 0.2, 4000, 2)
-    time.sleep(4)
+    time.sleep(12)
+    logger.success("kick left off")
+    # 前进
+    move(0, 0.2, 4000, 0)
+    time.sleep(2)
+    # 向右
+    move(-math.pi/2, 0.6, 4000, 0)
+    time.sleep(2)
+    # 向后
+    move(math.pi, 0.2, 4000, 0)
+    time.sleep(2)
+    # 在这里踢右面两下
     arm_port.write(perform_right_kick())
-    time.sleep(8)
+    time.sleep(12)
 
 
 def move(angle, distance, speed=4000, duration=1):
@@ -198,14 +226,11 @@ def first_row():
     move(math.pi/20, 0.8, 4000, 8)
     move(math.pi/20, 0.8, 4000, 8)
     move(math.pi/20, 0.8, 4000, 8)
+
     # 入门
     move(-math.pi/25, 0.9, 4000, 8)
+
     # kick()
-    move(math.pi, 0.2, 4000, 8)
-    move(0, 0.2, 4000, 8)
-    # 向右踢的准备运动
-    move(-math.pi/2, 0.6, 4000, 8)
-    move(math.pi, 0.2, 4000, 8)
     # kick()
     move(math.pi, 4.2, 4000, 8)
 
@@ -217,12 +242,10 @@ def main():
 
 
 if __name__ == "__main__":
-    # move(0, 3, 4000, 0)
+    move(0, 0.3, 4000, 0)
+    time.sleep(2)
     # move(0, 4, 4000, 0)
-    move(math.pi, 1, 4000, 0)
-    move(math.pi, 1, 4000, 4)
-    move(math.pi, 1, 4000, 4)
-    move(math.pi, 1, 4000, 4)
+    minus_1()
     # move(0, 4.2, 4000, 0)
     # time.sleep(4)
     # time.sleep(4)

@@ -53,7 +53,7 @@ class Listener():
                 continue
             data = json.loads(raw)
             message_queue.append(data)
-            if len(message_queue) >= 8:
+            if len(message_queue) >= 32:
                 obj = most_common(message_queue)
                 message_queue.clear()
                 return obj
